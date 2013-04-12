@@ -1,0 +1,273 @@
+{% extends "ukdata/base.html" %}
+
+{% block title %}UKDATA mashup{% endblock %}
+
+{% block content %}
+
+<h2>ATLAS UK state of play STEP09</h2>
+
+<ul>
+<li><a href="#aod">Analysis tests</a>
+<li><a href="#data">Data deployment</a>
+<li><a href="#resources">Resources</a>
+</ul>
+
+<h3>News</h3>
+<ul>
+<li> Done! see <a href="https://twiki.cern.ch/twiki/bin/view/Atlas/Step09Logbook">logbook</a>.
+<li> Sites, please blog, email, or otherwise communicate a summary of your observations
+</ul>
+{% comment %}
+<li> Added DATADISK usage columns to table below, showing volume of data sites actually recieved
+<li> LIV 14.5.0 ok
+<li>Please email <a href="mailto:atlas-uk-comp-operations@cern.ch">atlas-uk-comp-operations@cern.ch</a> to give feedback
+<li>Known probs are LIV (14.5.0), DURHAM (prod only), others being removed from blacklist
+<li>WMS blacklist:
+<ul>
+<li> UKI-SCOTGRID-DURHAM_MCDISK     
+<li> UKI-NORTHGRID-LIV-HEP_MCDISK   
+<li> UKI-LT2-QMUL_MCDISK            
+<li> UKI-SOUTHGRID-BHAM-HEP_MCDISK  
+<li> UKI-LT2-UCL-CENTRAL_MCDISK     
+<li> UKI-NORTHGRID-SHEF-HEP_MCDISK  
+<li> UKI-SOUTHGRID-CAM-HEP_MCDISK   
+</ul>
+<li>Pilot blacklist:
+<ul>
+<li> ANALY_MANC2                    
+<li> ANALY_QMUL                     
+<li> ANALY_SHEF                     
+<li> ANALY_RHUL                     
+</ul>
+<li>new panda jobs started <a href="http://atlas-ganga-storage.cern.ch/test_465/">465</a> and <a href="http://atlas-ganga-storage.cern.ch/test_466/">466</a>
+<li>new panda jobs started <a href="http://atlas-ganga-storage.cern.ch/test_461/">461</a> and <a href="http://atlas-ganga-storage.cern.ch/test_462/">462</a>
+<li>Latest fixes:
+<ul>
+  <li>426: UKI-LT2-QMUL_MCDISK
+  <li>427: -
+  <li>428: UKI-LT2-QMUL_MCDISK
+  <li>429: UKI-LT2-QMUL_MCDISK, UKI-LT2-RHUL_MCDISK
+
+  <li>434: ANALY_MANC1, ANALY_MANC2, ANALY_QMUL
+  <li>435: ANALY_MANC1, ANALY_MANC2
+  <li>436: ANALY_LANCS, ANALY_QMUL, ANALY_MANC2
+  <li>437: ANALY_MANC2, ANALY_QMUL
+</ul>
+<li>LANCS/LIV still strugging to have 14.5.0 repaired
+<li>Database probs caused DDM issues (<a href="https://twiki.cern.ch/twiki/bin/view/Atlas/Step09Logbook">logbook</a>)
+<li>New <a href="https://twiki.cern.ch/twiki/bin/view/Atlas/Step09Logbook">logbook page</a> for ATLAS step09
+<li>Site efficiencies <a href="http://gangarobot.cern.ch/st/status.html">page</a>
+<li>Kick-off Tuesday morning at 8am, jobs defined <a href="http://gangarobot.cern.ch/st/">here</a> 426-429 and 434-437
+<li>large input files are 2-3GB merged AOD, implications for LAN and WN disk, may need tuning
+{% endcomment %}
+
+<h3><a name="aod">Sites participating in STEP09 analysis tests</a></h3>
+
+<h4>Notes</h4>
+<ul>
+<li>Shares manually added, but should match <a href="http://panda.cern.ch:25980/server/pandamon/query?mode=listAODReplications&summary=Clouds">central shares</a></li>
+<li>Total merged AOD dataset volume is {{ aux.aodsize }} TB</li>
+<li>UK cloud has 2 copies of dataset</li>
+<li>Merge AOD pattern is {{ aux.dspattern }}
+</ul>
+
+<table border=1>
+<tr>
+<th>Token</th>
+<th>Share (%)</th>
+<th>Expected (TB)</th>
+<th>Reserved (TB)</th>
+<th>Headroom (TB)</th>
+<th>Unused (TB)</th>
+<th>Complete</th>
+{% comment %}
+{% endcomment %}
+<th>Updated</th>
+<th><a href="http://panda.cern.ch:25980/server/pandamon/query?dash=analysis">comment on pilot submission</a> (Fri pm)</th>
+</tr>
+
+{% for r in rows %}
+  <tr>
+    <td>{{ r.name }}</td>
+    <td align="center">{{ r.cent|floatformat:0 }}</td>
+    <td align="right">{{ r.tb|floatformat:1 }}</td>
+    <td align="right">{{ r.res|floatformat:1 }}</td>
+    <td align="right">{{ r.head|floatformat:1 }}</td>
+    <td class="{{ r.freestate }}" align="right">{{ r.free|floatformat:1 }}</td>
+    <td align="center">{{ r.dscount }}</td>
+{% comment %}
+{% endcomment %}
+    <td>{{ r.stamp|timesince }} ago</td>
+    <td>{{ r.comment }}</td>
+  </tr>
+{% endfor %}
+  <tr>
+    <td align="right">Totals</td> 
+    <td align="center">{{ aux.aodtots.sharetot }}</td> 
+    <td align="right">{{ aux.aodtots.tbtot|floatformat:1 }}</td> 
+    <td align="right">{{ aux.aodtots.restot|floatformat:1 }}</td> 
+    <td align="right">{{ aux.aodtots.headtot|floatformat:1 }}</td> 
+    <td align="right">{{ aux.aodtots.freetot|floatformat:1 }}</td> 
+    <td></td>
+    <td></td>
+  </tr>
+
+</table>
+
+<h3>Legend:</h3>
+<ul>
+<li><dfn>Token: space token name</dfn></li>
+<li><dfn>Share (%): percentage share of merged AOD data</dfn> </li>
+<li><dfn>Expected (TB): AOD volume based on merged AOD dataset size of {{ aux.aodsize }} TB</dfn> </li>
+<li><dfn>Reserved (TB): total size of space token, unit TB</dfn> </li>
+<li><dfn>Headroom (TB): STEP09 surplus space (Reserved - Volume), unit TB</dfn> </li>
+<li><dfn>Unused (TB): unused space within space token, unit TB</dfn> </li>
+<li><dfn>Complete: complete/total datasets at site matching merge.AOD pattern</dfn> </li>
+<li><dfn>Updated: when space token was last queried</dfn></li>
+</ul>
+
+Unused colours:
+<table>
+<tr>
+<td class="fail">&lt;{{ aux.failat }} TB</td>
+<td class="warn">{{ aux.failat }}-{{ aux.warnat }} TB</td>
+<td class="pass">{{ aux.warnat }}+ TB</td>
+</tr>
+</table>
+
+<hr>
+<h3><a name="data">Sites receiving mock STEP09 data</a></h3>
+
+<h4>Notes</h4>
+<ul>
+<li>Shares manually added, but should match <a href="http://atladcops.cern.ch:8000/drmon/ftmon_TiersInfo.html">central FT shares</a></li>
+<li>Total mock dataset volume (AOD+DPD) is {{ aux.datasize }} TB</li>
+<li>UK cloud has 2 copies of dataset</li>
+<li>STEP09 AOD pattern: {{ aux.aodregex }}</li>
+<li>STEP09 DPD pattern: {{ aux.dpdregex }}</li>
+<li>UK AOD: {{ aux.datatots.aodtb|floatformat:1 }}TB
+<li>UK AOD nfiles: {{ aux.datatots.aodtot }}
+<li>UK DPD: {{ aux.datatots.dpdtb|floatformat:1 }}TB
+<li>UK DPD nfiles: {{ aux.datatots.dpdtot }}
+</ul>
+
+
+<table border=1>
+<tr>
+<th>Token</th>
+<th>Share (%)</th>
+<th>Expected (TB)</th>
+<th>Reserved (TB)</th>
+<th>Headroom (TB)</th>
+<th>Complete</th>
+<th>nFiles</th>
+<th>Received (TB)</th>
+<th>Received/Expected (%)</th>
+<th>Unused (TB)</th>
+<th>Updated</th>
+</tr>
+
+{% for r in datarows %}
+  <tr>
+{% comment %}
+{% endcomment %}
+    <td>{{ r.name }}</td>
+    <td align="center">{{ r.cent|floatformat:0 }}</td>
+    <td align="right">{{ r.tb|floatformat:1 }}</td>
+    <td align="right">{{ r.res|floatformat:1 }}</td>
+    <td align="right">{{ r.head|floatformat:1 }}</td>
+{% comment %}
+    <td align="center">{{ r.aodcount }}</td>
+    <td align="center">{{ r.aodfiles }}</td>
+    <td align="center">{{ r.aodtb|floatformat:1 }}</td>
+    <td align="center">{{ r.aodpercent|floatformat:0 }}</td>
+{% endcomment %}
+    <td align="center">{{ r.dscount }}</td>
+    <td align="center">{{ r.nfiles }} ({{ r.aodfiles }}+{{ r.dpdfiles }})</td>
+    <td align="center">{{ r.dstb|floatformat:1 }}</td>
+    <td align="center">{{ r.percent|floatformat:0 }}</td>
+    <td class="{{ r.freestate }}" align="right">{{ r.free|floatformat:1 }}</td>
+    <td>{{ r.stamp|timesince }} ago</td>
+  </tr>
+{% endfor %}
+  <tr>
+    <td align="right">Totals</td> 
+    <td align="center">{{ aux.datatots.sharetot }}</td> 
+    <td align="right">{{ aux.datatots.tbtot|floatformat:1 }}</td> 
+    <td align="right">{{ aux.datatots.restot|floatformat:1 }}</td> 
+    <td align="right">{{ aux.datatots.headtot|floatformat:1 }}</td> 
+    <td></td> 
+    <td align="right">{{ aux.datatots.filestot }}</td> 
+    <td align="center">{{ aux.datatots.actualtb|floatformat:1 }}</td> 
+    <td align="center">{{ aux.datatots.actualpc|floatformat:0 }}</td> 
+{% comment %}
+{% endcomment %}
+  </tr>
+</table>
+
+<h3>Legend:</h3>
+<ul>
+<li><dfn>Token: space token name</dfn></li>
+<li><dfn>Share (%): percentage share of mock STEP09 data</dfn> </li>
+<li><dfn>Expected (TB): mock data volume based on dataset size of {{ aux.datasize }} TB</dfn> </li>
+<li><dfn>Reserved (TB): total size of space token, unit TB</dfn> </li>
+<li><dfn>Headroom (TB): STEP09 surplus space (Reserved - Volume), unit TB</dfn> </li>
+<li><dfn>Complete: complete/total datasets at site matching pattern ('step09.*')</dfn> </li>
+<li><dfn>nFiles : number of files on disk matching pattern ('step09.*')</dfn> </li>
+<li><dfn>Received (TB): total size of datasets matching pattern ('step09.*'), unit TB</dfn> </li>
+<li><dfn>Received/Expected (%): ratio of Received/Expected columns</dfn> </li>
+<li><dfn>Unused (TB): unused space within space token, unit TB</dfn> </li>
+<li><dfn>Updated: when space token was last queried</dfn></li>
+</ul>
+
+Unused colours:
+<table>
+<tr>
+<td class="fail">&lt;{{ aux.failat }} TB</td>
+<td class="warn">{{ aux.failat }}-{{ aux.warnat }} TB</td>
+<td class="pass">{{ aux.warnat }}+ TB</td>
+</tr>
+</table>
+
+<h3><a name="resources">Resources and links</a></h3>
+<p>
+
+STEP09 is a combined LHC experiment computing challenge from 2-14 June 2009.
+ATLAS will test entire offline computing model, including T0-T1, T1-T1, T1-T2
+data deployment. T1 reconstruction and normal T2 MC production and
+user-analysis, plus 'HammerCloud' stressing of analysis via both WMS and Panda
+routes. Here are some resource links:
+
+</p>
+<ul>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/Atlas/Step09Logbook">Logbook</a> for ATLAS step09
+<li>Site efficiencies <a href="http://gangarobot.cern.ch/st/status.html">page</a>
+<li><a href="http://tinyurl.com/o4wtov">Graeme's GDB slides</a> for an ATLAS overview of activities
+<li>Panda monitor for <a href="http://panda.cern.ch:25980/server/pandamon/query?dash=analysis">analysis queues </a>
+<li>Main ATLAS shift <a href="http://dashb-atlas-data.cern.ch/dashboard/request.py/site">dashboard</a>
+<li>Hammercloud <a href="http://gangarobot.cern.ch/st/">here</a> 426-429 and 434-437
+<li>Analysis <a href="https://twiki.cern.ch/twiki/bin/view/Atlas/StressTestJobs">stress jobs</a>, cases to be run
+<li>Production <a href="http://svr017.gla.scotgrid.ac.uk/factory/logs/">pilot factory logs</a>
+<li>Analysis <a href="http://www.hep.lancs.ac.uk/~love/pyfactory/logs/">pilot factory logs</a>
+<li>Questions to the UK comp OPS mailist please: <a href="mailto:atlas-uk-comp-operations@cern.ch">atlas-uk-comp-operations@cern.ch</a>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/Atlas/Step09Feedback">Feedback summary</a> throughout the two weeks, comments via atlas-uk-comp-operations please
+</ul>
+
+{% comment %}
+
+<h3><a href="analy">Status of sites for analysis</a></h3>
+
+<table border=1>
+<tr>
+<th>Site</th>
+<th>WMS</th>
+<th>Panda</th>
+<th>Pilot Role</th>
+<th>Unittests</th>
+<tr>
+{% for r in statrows %}
+
+{% endfor %}
+{% endcomment %}
+
+{% endblock %}

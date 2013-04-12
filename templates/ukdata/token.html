@@ -1,0 +1,65 @@
+{% extends "ukdata/base.html" %}
+
+{% block title %}UKDATA token status{% endblock %}
+
+{% block content %}
+
+<h3>Tier-2 token: {{ aux.thistok }} (Tier-1 <a href="{% url ukdata.views.site aux.t1site.id %}">here</a>)</h3>
+
+<table border=1>
+<tr>
+<th>Site</th>
+<th>Size (TB)</th>
+<th title="% of site pledge">Fraction</th>
+<th>Not-free (TB)</th>
+<th>Free (TB)</th>
+<th>Usage</th>
+{% comment %}
+<th>Expected (TB)</th>
+{% endcomment %}
+<th>Last update</th>
+</tr>
+
+{% for r in rows %}
+  <tr>
+    <td title="{{ r.srm }}"><a href="{% url ukdata.views.site r.site.id %}">{{ r.site }}</a></td>
+    <td align="right">{{ r.size|floatformat:1 }}</td>
+    <td align="center">{{ r.tokenfrac|floatformat:0 }}%</td>
+    <td align="right">{{ r.used|floatformat:1 }}</td>
+    <td class="{{ r.freestate }}" align="right">{{ r.free|floatformat:1 }}</td>
+    <td align="center"><img src="{{ r.usageurl|safe }}" alt="Used={{ r.used|floatformat:1 }} Free={{ r.free|floatformat:1 }}"></td>
+    <td>{{ r.stamp|timesince }} ago</td>
+  </tr>
+{% endfor %}
+<tr class=em>
+  <td align="right">Totals</td> 
+  <td align="right">{{ aux.tots.sizetot|floatformat:1 }}</td> 
+  <td>
+  <td align="right">{{ aux.tots.usedtot|floatformat:1 }}</td> 
+  <td align="right">{{ aux.tots.freetot|floatformat:1 }}</td> 
+  <td align="center"><img src="{{ aux.tots.usageurl|safe }}" alt="Used={{ aux.tots.usedtot|floatformat:1 }} Free={{ aux.tots.freetot|floatformat:1 }}"></td>
+  <td></td> 
+</tr>
+</table>
+
+<h3>Legend:</h3>
+<ul>
+<li><dfn>Size (TB): total size of space token, unit TB</dfn> </li>
+<li><dfn>Fraction (%): Percentage of this token compared with site pledge</dfn>
+<li><dfn>Not-free(TB): space not-free within space token, unit TB</dfn> </li>
+<li><dfn>Free (TB): unused space within space token, unit TB</dfn> </li>
+<li><dfn>Usage: Percent usage, red=used green=unused</dfn> </li>
+<li><dfn>Last update: when space token was last queried</dfn></li>
+</ul>
+
+Free colours:
+<table>
+<tr>
+<td class="fail">&lt;{{ aux.failat }} TB</td>
+<td class="warn">{{ aux.failat }}-{{ aux.warnat }} TB</td>
+<td class="pass">{{ aux.warnat }}+ TB</td>
+</tr>
+</table>
+
+
+{% endblock %}

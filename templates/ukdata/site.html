@@ -1,0 +1,116 @@
+{% extends "ukdata/base.html" %}
+
+{% block title %}UKDATA site status{% endblock %}
+
+{% block content %}
+
+<h3>Site: {{ aux.thissite.name }}</h3>
+
+<table border=1>
+<tr>
+<th>SRM</th>
+<th>Size (TB)</th>
+<th>Used (TB)</th>
+<th>Unused (TB)</th>
+<th>Last update</th>
+</tr>
+
+{% for srm in srms %}
+  <tr>
+    <td>{{ srm }}
+    <td align="right">{{ srm.total|floatformat:1 }}
+    <td align="right">{{ srm.used|floatformat:1 }}
+    <td align="right">{{ srm.unused|floatformat:1 }}
+    <td>{{ srm.last_modified|timesince }} ago</td>
+  </tr>
+{% endfor %}
+
+  <tr class=em>
+    <td align="right">Totals</td> 
+    <td align="right">{{ aux.thissite.total|floatformat:1 }}</td> 
+    <td align="right">{{ aux.thissite.used|floatformat:1 }}</td> 
+    <td align="right">{{ aux.thissite.unused|floatformat:1 }}</td> 
+    <td>{{ aux.thissite.last_modified|timesince }} ago</td>
+  </tr>
+</table>
+
+
+{% for srm in srms %}
+<h3>SRM: {{ srm }}</h3>
+<img src="{% cycle tokurls.0 tokurls.1 %}">
+{% comment %}
+{% endcomment %}
+<table border=1>
+<tr>
+<th>Token</th>
+<th>Size (TB)</th>
+<th>Used (TB)</th>
+<th>Unused (TB)</th>
+<th>Usage</th>
+<th>Last update</th>
+{% comment %}
+<th>Fwd check</th>
+<th>Rev check</th>
+{% endcomment %}
+</tr>
+  {% for t in tokens %}
+    {% ifequal srm t.srm %}
+    <tr >
+      {% if istier1 %}
+        <td align="left">{{ t.name }}</a>
+      {% else %}
+        <td align="left"><a href="{% url ukdata.views.token t.name %}">{{ t.name }}</a>
+      {% endif %}
+      <td align="right">{{ t.total|floatformat:1 }}
+      <td align="right">{{ t.used|floatformat:1 }}
+      <td align="right">{{ t.unused|floatformat:1 }}
+      <td title=""><img src="http://chart.apis.google.com/chart?cht=bhs&chd=t:{{ t.used }}|{{ t.unused }}&chs=96x16&chco={{ red }},{{ green }}&chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,{{ t.total }}">
+      <td>{{ t.last_modified|timesince }} ago</td>
+{% comment %}
+      <td>{{ t.fwdcheck|date }}</td>
+      <td>{{ t.revcheck|date }}</td>
+{% endcomment %}
+    </tr>
+    {% endifequal %}
+  {% endfor %}
+  <tr class=em>
+    <td>Total
+    <td align="right">{{ srm.total|floatformat:1 }}
+    <td align="right">{{ srm.used|floatformat:1 }}
+    <td align="right">{{ srm.unused|floatformat:1 }}
+    <td><img src="http://chart.apis.google.com/chart?cht=bhs&chd=t:{{ srm.used }}|{{ srm.unused }}&chs=96x16&chco={{ red }},{{ green }}&chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,{{ srm.total }}"><img>
+    <td>{{ srm.last_modified|timesince }} ago</td>
+{% comment %}
+    </tr>
+    <td></td>
+    <td></td>
+{% endcomment %}
+    </tr>
+  </tr>
+</table>
+{% endfor %}
+
+
+<h3>Legend:</h3>
+<ul>
+<li><dfn>Size (TB): total size of space token, unit TB
+<li><dfn>Unused (TB): unused space within space token, unit TB
+<li><dfn>Usage: Percent usage, red=used green=unused</dfn> </li>
+<li><dfn>Last update: when space token was last queried</dfn></li>
+<li><dfn>Fwd Check: date last checked for ophan LFC entries
+<li><dfn>Rev Check: date last checked for dark data
+</ul>
+
+{% comment %}
+Unused colours:
+<table>
+<tr>
+<td class="fail">&lt;{{ aux.failat }} TB</td>
+<td class="warn">{{ aux.failat }}-{{ aux.warnat }} TB</td>
+<td class="pass">{{ aux.warnat }}+ TB</td>
+</tr>
+</table>
+{% endcomment %}
+
+
+{% endblock %}

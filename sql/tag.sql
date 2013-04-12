@@ -1,0 +1,9 @@
+INSERT INTO ukdata_tag (name) VALUES ('atlas');
+INSERT INTO ukdata_tag (name) VALUES ('tier1');
+INSERT INTO ukdata_tag (name) VALUES ('tier2');
+INSERT INTO ukdata_tag (name) VALUES ('londont2');
+INSERT INTO ukdata_tag (name) VALUES ('northgrid');
+INSERT INTO ukdata_tag (name) VALUES ('scotgrid');
+INSERT INTO ukdata_tag (name) VALUES ('southgrid');
+INSERT INTO ukdata_tag (name) VALUES ('production');
+INSERT INTO ukdata_tag (name) VALUES ('analysis');

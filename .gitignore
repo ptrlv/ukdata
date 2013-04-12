@@ -1,0 +1,7 @@
+*.pyc
+*.png
+env/
+settings*
+settings/security*
+settings/env.py
+settings/settings_local.py

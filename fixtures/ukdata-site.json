@@ -1,0 +1,219 @@
+[
+  {
+    "pk": 6, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 2092.0, 
+      "tags": [
+        5, 
+        7
+      ], 
+      "gocid": 0, 
+      "unused": 596.00494480855696, 
+      "total": 996.77239477862395, 
+      "name": "RAL-LCG2"
+    }
+  }, 
+  {
+    "pk": 14, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 0.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 2.6898312796520001, 
+      "total": 2.7358941675519999, 
+      "name": "UKI-LT2-Brunel"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 78.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 135.46420485483901, 
+      "total": 138.59000470732801, 
+      "name": "UKI-LT2-QMUL"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 70.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 141.59758750572701, 
+      "total": 200.11111625523199, 
+      "name": "UKI-LT2-RHUL"
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 14.0, 
+      "tags": [
+        6, 
+        8
+      ], 
+      "gocid": 0, 
+      "unused": 34.886869197296001, 
+      "total": 45.079976738816001, 
+      "name": "UKI-LT2-UCL-CENTRAL"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 0.0, 
+      "tags": [
+        6, 
+        7, 
+        8
+      ], 
+      "gocid": 0, 
+      "unused": 3.9875159379970002, 
+      "total": 4.2949672960000003, 
+      "name": "UKI-LT2-UCL-HEP"
+    }
+  }, 
+  {
+    "pk": 16, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 170.0, 
+      "tags": [
+        1, 
+        6
+      ], 
+      "gocid": 0, 
+      "unused": 319.99280658553198, 
+      "total": 395.82418599936, 
+      "name": "UKI-NORTHGRID-LANCS-HEP"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 59.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 80.435437038450004, 
+      "total": 136.224551469056, 
+      "name": "UKI-NORTHGRID-LIV-HEP"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 388.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 47.753183191292997, 
+      "total": 87.883620810752006, 
+      "name": "UKI-NORTHGRID-MAN-HEP"
+    }
+  }, 
+  {
+    "pk": 17, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 9.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 14.215453603829999, 
+      "total": 25.262997635072001, 
+      "name": "UKI-NORTHGRID-SHEF-HEP"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 32.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 9.1555781504800002, 
+      "total": 10.995116277759999, 
+      "name": "UKI-SCOTGRID-DURHAM"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 0.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 10.628472242168, 
+      "total": 12.094627905536001, 
+      "name": "UKI-SCOTGRID-ECDF"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 416.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 180.20268037865699, 
+      "total": 289.17155810508802, 
+      "name": "UKI-SCOTGRID-GLASGOW"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 11.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 19.500862546654002, 
+      "total": 32.598801776640002, 
+      "name": "UKI-SOUTHGRID-BHAM-HEP"
+    }
+  }, 
+  {
+    "pk": 15, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 16.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 14.652624182044001, 
+      "total": 35.184372088831999, 
+      "name": "UKI-SOUTHGRID-CAM-HEP"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 57.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 25.142645103593999, 
+      "total": 71.468255805439995, 
+      "name": "UKI-SOUTHGRID-OX-HEP"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "ukdata.site", 
+    "fields": {
+      "pledge": 165.0, 
+      "tags": [], 
+      "gocid": 0, 
+      "unused": 116.036237909333, 
+      "total": 143.49857989632, 
+      "name": "UKI-SOUTHGRID-RALPP"
+    }
+  }
+]

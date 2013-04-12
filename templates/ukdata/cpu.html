@@ -1,0 +1,41 @@
+{% extends "ukdata/base.html" %}
+
+{% block title %}UKDATA mashup{% endblock %}
+
+{% block content %}
+
+<h2>ATLAS UK state of CPU resource</h2>
+
+<hr>
+
+<h4>Notes</h4>
+<ul>
+<li> HEPSPEC06 taken from <a href="http://www.gridpp.ac.uk/northgrid/accounting/">GridPP</a>
+<li> ATLAS fraction taken from GridPP MoU
+</ul>
+
+
+<table border=1>
+<tr>
+<th>Sitename</th>
+</tr>
+
+{% for r in therows %}
+  <tr>
+    <td>{{ r.sitename }}</td>
+    <td align="center">{{ r.cent|floatformat:0 }}</td>
+    <td align="right">{{ r.tb|floatformat:1 }}</td>
+    <td align="right">{{ r.res|floatformat:1 }}</td>
+  </tr>
+{% endfor %}
+  <tr>
+    <td align="right">Totals</td> 
+  </tr>
+</table>
+
+<h4>Legend:</h4>
+<ul>
+</ul>
+
+
+{% endblock %}

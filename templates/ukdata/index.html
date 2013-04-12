@@ -1,0 +1,102 @@
+{% extends "ukdata/base.html" %}
+
+{% block content %}
+
+<h2>ATLAS UK state of storage resource</h2>
+<hr>
+
+
+<h3>Tier-2 site view (2012 pledge)</h3>
+<table id=sites border=1>
+  <thead>
+  <tr>
+    <th>Site (click for detail)
+    <th>Pledge (TB)
+    <th>Actual (TB)
+    <th>Not-free (TB)
+    <th>Free (TB)
+    <th>Usage
+  </thead>
+</table>
+
+<script>
+
+var sitedata = [
+    {
+      "name": "RAL-LCG2", 
+      "total": 8367.3614798807102, 
+      "unused": 1202.0813730147599, 
+      "used": 7165.2801068659501, 
+      "wlcg2012": 3375.0
+    }, 
+    {
+      "name": "UKI-LT2-Brunel", 
+      "total": 12.992276070400001, 
+      "unused": 10.263387613525, 
+      "used": 2.728888456875, 
+      "wlcg2012": 0.0
+    }
+  ];
+
+
+d3.json('http://lapz.lancs.ac.uk:8123/sites.json', function(data) {
+
+  var columns = ['name', 'wlcg2012', 'total', 'used', 'unused', ''];
+  var tbody = d3.select('table#sites').append('tbody');
+  var rows = tbody.selectAll("tr")
+          .data(data)
+          .enter()
+          .append("tr");
+  
+  var cells = rows.selectAll("td")
+          .data(function(row) {
+              return columns.map(function(column) {
+                  return {column: column, value: row[column]};
+              });
+          })
+          .enter()
+          .append("td")
+              .attr('class', function(d) { return d.column })
+              .text(function(d) { return d.value; })
+  
+  var flag = d3.selectAll('td.wlcg2012')
+          .style('background', function(d) {
+            return d.delivered 
+          })
+});
+
+{% comment %}
+var chart = d3.select("body").append("svg")
+      .attr("class", "chart")
+      .attr("width", 420)
+      .attr("height", 20 * data.length);
+
+var x = d3.scale.linear()
+      .domain([0, d3.max(data)])
+      .range([0, 420]);
+
+var y = d3.scale.ordinal()
+      .domain(data)
+      .rangeBands([0, 120]);
+
+chart.selectAll("rect")
+      .data(data)
+    .enter().append("rect")
+      .attr("y", function(d, i) { return i * 20; })
+      .attr("width", x)
+      .attr("height", 20);
+
+chart.selectAll("text")
+      .data(data)
+    .enter().append("text")
+      .attr("x", x)
+      .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
+      .attr("dx", -3) // padding-right
+      .attr("dy", ".35em") // vertical-align: middle
+      .attr("text-anchor", "end") // text-align: right
+      .text(String);
+
+{% endcomment %}
+</script>
+
+{% endblock %}

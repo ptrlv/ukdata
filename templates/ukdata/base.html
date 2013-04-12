@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+<meta charset="utf-8">
+<title>UK ATLAS data</title>
+<script src="/~love/static/js/d3.v3.min.js"></script>
+<style type="text/css">
+tr.em {background:#EEEEEE}
+td.pass {background:rgb(216,238,206)}
+td.warn {background:rgb(251,247,219)}
+td.fail {background:rgb(239,214,214)}
+td.softfail {background:#ffdddd}
+td.softpass {background:#ddffdd}
+{% comment %}
+#table {border-collapse:collapse}
+{% endcomment %}
+</style>
+</head>
+
+<body>
+    <p><a href="{% url ukdata.views.front %}">Home</a></p>
+    <hr>
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+    <hr>
+    <a href="mailto:p.love@lancaster.ac.uk" style="font-style:italic">Feedback</a>
+    {% endblock %}
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37571466-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

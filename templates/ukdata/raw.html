@@ -1,0 +1,26 @@
+{% extends "ukdata/base.html" %}
+
+{% block title %}UKDATA mashup{% endblock %}
+
+{% block content %}
+
+<h3>Raw numbers</h3>
+<table border=1>
+  <tr>
+    <th>Label</th>
+    <th>TotalSize (TB)</th>
+    <th>UnusedSize (TB)</th>
+    <th>Last modified
+  </tr>
+{% for l in labels %}
+  <tr>
+    <td>{{ l.name }}</td>
+    <td align="right">{{ l.token.total|floatformat:1 }}</td>
+    <td align="right">{{ l.token.unused|floatformat:1 }}</td>
+    <td align="right">{{ l.token.last_modified|timesince }} ago</td>
+  </tr>
+
+{% endfor %}
+</table>
+
+{% endblock %}
