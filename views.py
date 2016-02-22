@@ -1,7 +1,8 @@
 import csv
+import pytz
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from ukdata.models import Site, Space, Pattern, Tag, Storage, DDMSource, Token
 from django.core import serializers
 from django.shortcuts import render_to_response
@@ -16,6 +17,66 @@ import json as json
 _TOKMATCH = re.compile('(\S+)_(\S+)')
 _RED = 'B94A48'
 _GREEN = '99CC99'
+
+atlaspledge2009 = {
+        'londont2' : 130,
+        'northgrid' : 501,
+        'scotgrid' : 358,
+        'southgrid' : 200,
+        }
+
+atlaspledge2010 = {
+        'londont2' : 712,
+        'northgrid' : 926,
+        'scotgrid' : 854,
+        'southgrid' : 295,
+        }
+
+# These from WLCG
+# http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/
+atlaspledge2012 = {
+        'londont2' : 1688,
+        'northgrid' : 2169,
+        'scotgrid' : 1290,
+        'southgrid' : 728,
+        }
+
+atlaspledge2013 = {
+        'londont2' : 1609,
+        'northgrid' : 1841,
+        'scotgrid' : 1120,
+        'southgrid' : 729,
+        }
+
+atlaspledge2015 = {
+        'londont2' : 1427,
+        'northgrid' : 1874,
+        'scotgrid' : 1111,
+        'southgrid' : 888,
+        }
+
+atlaspledge2016 = {
+        'londont2' : 2430,
+        'northgrid' : 3182,
+        'scotgrid' : 1845,
+        'southgrid' : 1530,
+        }
+
+#    atlaspledge2011 = {
+#            'londont2' : 898,
+#            'northgrid' : 1168,
+#            'scotgrid' : 1077,
+#            'southgrid' : 371,
+#            }
+
+# These from WLCG pdf 
+# http://lcg.web.cern.ch/LCG/Resources/
+#    atlaspledge2011 = {
+#            'londont2' : 1342,
+#            'northgrid' : 1539,
+#            'scotgrid' : 1237,
+#            'southgrid' : 582,
+#            }
 
 def maint(request):
     """
@@ -35,239 +96,7 @@ def index(request):
     Rendered view of font page
     """
 
-    atlaspledge2009 = {
-            'londont2' : 130,
-            'northgrid' : 501,
-            'scotgrid' : 358,
-            'southgrid' : 200,
-            }
-
-    atlaspledge2010 = {
-            'londont2' : 712,
-            'northgrid' : 926,
-            'scotgrid' : 854,
-            'southgrid' : 295,
-            }
-
 # These from GridPP spreadsheet
-#    atlaspledge2011 = {
-#            'londont2' : 898,
-#            'northgrid' : 1168,
-#            'scotgrid' : 1077,
-#            'southgrid' : 371,
-#            }
-
-# These from WLCG pdf 
-# http://lcg.web.cern.ch/LCG/Resources/
-#    atlaspledge2011 = {
-#            'londont2' : 1342,
-#            'northgrid' : 1539,
-#            'scotgrid' : 1237,
-#            'southgrid' : 582,
-#            }
-
-# These from WLCG
-# http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/
-    atlaspledge2012 = {
-            'londont2' : 1688,
-            'northgrid' : 2169,
-            'scotgrid' : 1290,
-            'southgrid' : 728,
-            }
-    atlaspledge2013 = {
-            'londont2' : 1609,
-            'northgrid' : 1841,
-            'scotgrid' : 1120,
-            'southgrid' : 729,
-            }
-
-    t1 = Token.objects.filter(name__contains='RAL-LCG')
-    t2 = Token.objects.filter(name__contains='UKI')
-    tokens = t1 | t2
-#    tokens.exclude(name='RAL-LCG2_PPSDATADISK')
-    sites = Site.objects.all().order_by('name')
-    t1sites = sites.filter(tags__name='tier1')
-    t2sites = sites.filter(tags__name='tier2')
-
-    srmtoks = [
-                'ATLASDATADISK',
-                'ATLASGROUPDISK',
-                'ATLASHOTDISK',
-                'ATLASLOCALGROUPDISK',
-#                'ATLASMCDISK',
-#                'ATLASMCTAPE',
-                'ATLASPRODDISK',
-                'ATLASSCRATCHDISK',
-                ]
-    
-    usageurl = "http://chart.apis.google.com/chart?cht=bhs&chd=t:%.1f|%.1f&" + \
-               "chs=96x16&" + \
-               "chco=%s,%s&" % (_RED, _GREEN) + \
-               "chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,%.1f"
-
-    t1pledge = []
-    t1rows = []
-    for site in t1sites:
-        t1row = {}
-        t1row['s'] = site
-#        if site.total > site.pledge:
-#        if site.total > site.wlcg2010:
-        if site.total > site.wlcg2013:
-            t1row['p'] = 'pass'
-        else:
-            t1row['p'] = 'fail'
-#        if site.total > site.wlcg2010:
-        if site.total > site.wlcg2013:
-            t1pledge.append('pass')
-        else:
-            t1pledge.append('fail')
-
-        t1row['url'] = usageurl % (site.used, site.unused, site.total)
-        t1rows.append(t1row)
-
-    t2tots = {}
-    t2tots['pledge'] = 0
-    t2tots['wpledge'] = 0
-    t2tots['size'] = 0
-    t2tots['wsize'] = 0
-    t2tots['used'] = 0
-    t2tots['unused'] = 0
-
-
-    t2rows = []
-    for site in t2sites:
-        t2row = {}
-        t2row['s'] = site
-#        t2row['wpledge'] = 0.80 * site.wlcg2012
-        t2row['wpledge'] = 1.00 * site.wlcg2013
-        t2row['localtax'] = site.wlcg2013 + 0.20 * site.wlcg2013
-        try:
-            localtoks = Token.objects.filter(srm__site=site, name='ATLASLOCALGROUPDISK')
-        except Token.DoesNotExist:
-            print "No localgroupdisk for %s" % fedsite.name
-        localdisk = 0
-        for localtok in localtoks:
-            localdisk +=  localtok.total
-#        t2row['wsize'] = site.total - localdisk
-        t2row['wsize'] = site.total # include localgroupdisk
-        if t2row['wsize'] > t2row['wpledge']:
-            t2row['w'] = 'pass'
-        else:
-            t2row['w'] = 'fail'
-        if site.total > site.wlcg2013:
-            t2row['p'] = 'pass'
-        else:
-            t2row['p'] = 'fail'
-        if site.total > t2row['localtax']:
-            t2row['tax'] = 'softpass'
-        else:
-            t2row['tax'] = 'softfail'
-
-        t2row['url'] = usageurl % (site.used, site.unused, site.total)
-
-        t2tots['pledge'] += site.wlcg2013
-        t2tots['wpledge'] += t2row['wpledge']
-        t2tots['wsize'] += t2row['wsize']
-        t2tots['size'] += site.total
-        t2tots['used'] += site.used
-        t2tots['unused'] += site.unused
-
-        t2rows.append(t2row)
-
-
-    fedrows = []
-    fedtots = {}
-    fedtots['total'] = 0
-    fedtots['p'] = 0
-    for fed in atlaspledge2013.keys():
-        fedrow = {}
-        fedrow['name'] = fed
-        fedrow['pledge'] = atlaspledge2013[fed]
-        fedrow['total'] = 0
-        fedsites = sites.filter(tags__name=fed)
-        for fedsite in fedsites:
-            try:
-                localtoks = Token.objects.filter(srm__site=fedsite, name='ATLASLOCALGROUPDISK')
-            except Token.DoesNotExist:
-                print "No localgroupdisk for %s" % fedsite.name
-            nonlocal = fedsite.total
-            for localtok in localtoks:
-                nonlocal -=  localtok.total
-            fedrow['total'] += nonlocal
-        if fedrow['total'] > atlaspledge2013[fed]:
-            fedrow['p'] = 'pass'
-        else:
-            fedrow['p'] = 'fail'
-        fedtots['total'] += fedrow['total']
-        fedtots['p'] += atlaspledge2013[fed]
-
-        fedrows.append(fedrow)
-
-    usageurl = "http://chart.apis.google.com/chart?cht=bhs&chd=t:%.1f|%.1f" + \
-               "&chs=96x16&chco=%s,%s" % (_RED, _GREEN) + \
-               "&chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,%s"
-
-    context = {
-                't2tots' : t2tots,
-                't1pledge' : t1pledge,
-                't1sites' : t1sites,
-                't2sites' : t2sites,
-                'srmtoks' : srmtoks,
-                'url' : usageurl,
-                'fedrows' : fedrows,
-                'fedtots' : fedtots,
-                't1rows' : t1rows,
-                't2rows' : t2rows,
-                'red' : _RED,
-                'green' : _GREEN,
-              }
-
-    return render_to_response('ukdata/index.html', context)
-
-def front(request):
-    """
-    Rendered view of font page
-    """
-
-    atlaspledge2009 = {
-            'londont2' : 130,
-            'northgrid' : 501,
-            'scotgrid' : 358,
-            'southgrid' : 200,
-            }
-
-    atlaspledge2010 = {
-            'londont2' : 712,
-            'northgrid' : 926,
-            'scotgrid' : 854,
-            'southgrid' : 295,
-            }
-
-# These from GridPP spreadsheet
-#    atlaspledge2011 = {
-#            'londont2' : 898,
-#            'northgrid' : 1168,
-#            'scotgrid' : 1077,
-#            'southgrid' : 371,
-#            }
-
-# These from WLCG pdf 
-# http://lcg.web.cern.ch/LCG/Resources/
-#    atlaspledge2011 = {
-#            'londont2' : 1342,
-#            'northgrid' : 1539,
-#            'scotgrid' : 1237,
-#            'southgrid' : 582,
-#            }
-
-# These from WLCG
-# http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/
-    atlaspledge2012 = {
-            'londont2' : 1688,
-            'northgrid' : 2169,
-            'scotgrid' : 1290,
-            'southgrid' : 728,
-            }
 
     t1 = Token.objects.filter(name__contains='RAL-LCG')
     t2 = Token.objects.filter(name__contains='UKI')
@@ -298,14 +127,11 @@ def front(request):
     for site in t1sites:
         t1row = {}
         t1row['s'] = site
-#        if site.total > site.pledge:
-#        if site.total > site.wlcg2010:
-        if site.total > site.wlcg2012:
+        if site.total > site.wlcg2016:
             t1row['p'] = 'pass'
         else:
             t1row['p'] = 'fail'
-#        if site.total > site.wlcg2010:
-        if site.total > site.wlcg2012:
+        if site.total > site.wlcg2016:
             t1pledge.append('pass')
         else:
             t1pledge.append('fail')
@@ -326,23 +152,22 @@ def front(request):
     for site in t2sites:
         t2row = {}
         t2row['s'] = site
-#        t2row['wpledge'] = 0.80 * site.wlcg2012
-        t2row['wpledge'] = 1.00 * site.wlcg2012
-        t2row['localtax'] = site.wlcg2012 + 0.20 * site.wlcg2012
+        t2row['wpledge'] = 1.00 * site.wlcg2016
+        t2row['localtax'] = site.wlcg2016 + 0.20 * site.wlcg2016
+        dtdead = datetime.now() - timedelta(days=10)
         try:
-            localtoks = Token.objects.filter(srm__site=site, name='ATLASLOCALGROUPDISK')
+            localtoks = Token.objects.filter(srm__site=site, name='ATLASLOCALGROUPDISK', last_modified__gt=dtdead)
         except Token.DoesNotExist:
             print "No localgroupdisk for %s" % fedsite.name
         localdisk = 0
         for localtok in localtoks:
             localdisk +=  localtok.total
-#        t2row['wsize'] = site.total - localdisk
         t2row['wsize'] = site.total # include localgroupdisk
         if t2row['wsize'] > t2row['wpledge']:
             t2row['w'] = 'pass'
         else:
             t2row['w'] = 'fail'
-        if site.total > site.wlcg2012:
+        if site.total > site.wlcg2016:
             t2row['p'] = 'pass'
         else:
             t2row['p'] = 'fail'
@@ -353,7 +178,7 @@ def front(request):
 
         t2row['url'] = usageurl % (site.used, site.unused, site.total)
 
-        t2tots['pledge'] += site.wlcg2012
+        t2tots['pledge'] += site.wlcg2016
         t2tots['wpledge'] += t2row['wpledge']
         t2tots['wsize'] += t2row['wsize']
         t2tots['size'] += site.total
@@ -367,27 +192,28 @@ def front(request):
     fedtots = {}
     fedtots['total'] = 0
     fedtots['p'] = 0
-    for fed in atlaspledge2012.keys():
+    for fed in atlaspledge2016.keys():
         fedrow = {}
         fedrow['name'] = fed
-        fedrow['pledge'] = atlaspledge2012[fed]
+        fedrow['pledge'] = atlaspledge2016[fed]
         fedrow['total'] = 0
         fedsites = sites.filter(tags__name=fed)
+        dtdead = datetime.now() - timedelta(days=10)
         for fedsite in fedsites:
             try:
-                localtoks = Token.objects.filter(srm__site=fedsite, name='ATLASLOCALGROUPDISK')
+                localtoks = Token.objects.filter(srm__site=fedsite, name='ATLASLOCALGROUPDISK', last_modified__gt=dtdead)
             except Token.DoesNotExist:
                 print "No localgroupdisk for %s" % fedsite.name
             nonlocal = fedsite.total
             for localtok in localtoks:
                 nonlocal -=  localtok.total
             fedrow['total'] += nonlocal
-        if fedrow['total'] > atlaspledge2012[fed]:
+        if fedrow['total'] > atlaspledge2016[fed]:
             fedrow['p'] = 'pass'
         else:
             fedrow['p'] = 'fail'
         fedtots['total'] += fedrow['total']
-        fedtots['p'] += atlaspledge2012[fed]
+        fedtots['p'] += atlaspledge2016[fed]
 
         fedrows.append(fedrow)
 
@@ -410,7 +236,7 @@ def front(request):
                 'green' : _GREEN,
               }
 
-    return render_to_response('ukdata/front.html', context)
+    return render_to_response('ukdata/index.html', context)
 
 def raw(request):
     """
@@ -430,9 +256,9 @@ def rawbysite(request):
     Return data of site usage in json format
     """
 
-    data = Site.objects.values('name', 'total', 'used', 'unused', 'wlcg2012')
+    data = Site.objects.values('name', 'total', 'used', 'unused', 'wlcg2016')
     for d in data:
-        if d['total'] > d['wlcg2012']:
+        if d['total'] > d['wlcg2016']:
             d['delivered'] = True
         else:
             d['delivered'] = False
@@ -545,6 +371,8 @@ def update(request):
     srm.unused = 0
     srmtoks = Token.objects.filter(srm=srm)
     srmtoks = srmtoks.exclude(name='ATLASMCDISK')
+    dtdead = datetime.now() - timedelta(days=10)
+    srmtoks = srmtoks.filter(last_modified__gt=dtdead)
     for token in srmtoks:
         srm.total += token.total
         srm.used += token.used
@@ -614,6 +442,8 @@ def token(request, t):
     tokens = Token.objects.filter(name=t)
     tokens = tokens.filter(srm__site__tags__name='tier2')
     tokens = tokens.exclude(name__contains='PPS').order_by('srm__site__name')
+    dtdead = datetime.now() - timedelta(days=10)
+    tokens = tokens.filter(last_modified__gt=dtdead)
 
     if not tokens:
         raise Http404
@@ -644,7 +474,7 @@ def token(request, t):
             percentused = 0
 
         try:
-          tokenfrac = 100 * token.total / token.srm.site.wlcg2012
+          tokenfrac = 100 * token.total / token.srm.site.wlcg2016
         except ZeroDivisionError, e:
           tokenfrac = 0
 
@@ -707,6 +537,8 @@ def site(request, sid):
     srms = Storage.objects.filter(site=site)
     tokens = Token.objects.filter(srm__site=site)
     tokens = tokens.exclude(name='ATLASMCDISK')
+    dtdead = datetime.now() - timedelta(days=10)
+    tokens = tokens.filter(last_modified__gt=dtdead)
     istier1 = False
     if tier1 in site.tags.all(): istier1 = True
 

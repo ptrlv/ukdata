@@ -1,102 +1,161 @@
 {% extends "ukdata/base.html" %}
 
+{% block title %}UKDATA mashup{% endblock %}
+
 {% block content %}
 
 <h2>ATLAS UK state of storage resource</h2>
 <hr>
+<h3>Tier-1</h3>
 
-
-<h3>Tier-2 site view (2012 pledge)</h3>
-<table id=sites border=1>
-  <thead>
+<table border=1>
   <tr>
-    <th>Site (click for detail)
-    <th>Pledge (TB)
-    <th>Actual (TB)
-    <th>Not-free (TB)
-    <th>Free (TB)
-    <th>Usage
-  </thead>
+    <th>Site (click for detail)</th>
+    <th>WLCG Pledge 2016 (TB)</th>
+    <th>Actual (TB)</th>
+    <th>Not-free(TB)</th>
+    <th>Free (TB)</th>
+    <th>Usage</th>
+  </tr>
+{% for t1row in t1rows %}
+  <tr>
+    <td><a href="{% url ukdata.views.site t1row.s.id %}">{{ t1row.s.name }}</a></td>
+    <td class="{{ p }}" align="right">{{ t1row.s.wlcg2016|floatformat:0 }}</td>
+    {% for p in t1pledge %}
+      {% ifequal forloop.counter forloop.parentloop.counter %}
+        <td class={{ p }} align="right">{{ t1row.s.total|floatformat:0 }}</td>
+      {% endifequal %}
+    {% endfor %}
+    <td align="right">{{ t1row.s.used|floatformat:0 }}</td>
+    <td align="right">{{ t1row.s.unused|floatformat:0 }}</td>
+    <td><img src="{{ t1row.url }}"></img>
+  </tr>
+{% endfor %}
+</table>
+(NOTE: includes space in RAL-FARM)
+
+<h3>Federated Tier-2 totals (2016 pledge)</h3>
+
+<table border=1>
+<tr>
+  <th>Federation</th>
+  <th>Pledge (TB)</th>
+  <th>Actual (TB)</th>
+</tr>
+{% for row in fedrows %}
+<tr>
+<td> {{ row.name }} 
+<td align="right"> {{ row.pledge }} 
+<td align="right" class={{ row.p }}>{{ row.total|floatformat:0 }}
+</tr>
+{% endfor %}
+<tr class=em>
+<td align="right">Total
+<td align="right">{{ fedtots.p|floatformat:0 }}
+<td align="right">{{ fedtots.total|floatformat:0 }}
+</tr>
+</table>
+<table>
+<tr>
+<td class="pass">Actual&gt; WLCG Pledge
+<td class="fail">Actual&lt; WLCG Pledge
+</tr>
+</table>
+(Excludes LOCALGROUPDISK)
+
+<h3>Tier-2 site view (2016 pledge)</h3>
+<table border=1>
+  <tr>
+    <th>Site (click for detail)</th>
+    <th>Pledge (TB)</th>
+    <th>Actual (TB)</th>
+{% comment %}
+    <th>+20%
+{% endcomment %}
+    <th>Not-free (TB)</th>
+    <th>Free (TB)</th>
+    <th>Usage</th>
+  </tr>
+{% for t2row in t2rows %}
+  <tr>
+    <td><a href="{% url ukdata.views.site t2row.s.id %}">{{ t2row.s.name }}</a></td>
+    <td align="right">{{ t2row.s.wlcg2016|floatformat:0 }}</td>
+    <td class="{{ t2row.p }}" align="right">{{ t2row.s.total|floatformat:0 }}</td>
+{% comment %}
+    <td class="{{ t2row.tax }}" align="right">{{ t2row.localtax|floatformat:0 }}</td>
+_RED = 'B94A48'
+_GREEN = '99CC99'
+{% endcomment %}
+    <td align="right">{{ t2row.s.used|floatformat:0 }}</td>
+    <td align="right">{{ t2row.s.unused|floatformat:0 }}</td>
+    <td><img src="http://chart.apis.google.com/chart?cht=bhs&chd=t:{{ t2row.s.used|floatformat:1 }}|{{ t2row.s.unused|floatformat:1 }}&chs=96x16&chco={{ red }},{{ green }}&chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,{{ t2row.s.total|floatformat:1 }}"><img>
+  </tr>
+{% endfor %}
+
+<tr class=em>
+<td align="right">Tier-2 total</td>
+<td align="right">{{ t2tots.wpledge|floatformat:0 }}</td>
+<td align="right">{{ t2tots.wsize|floatformat:0 }}</td>
+<td align="right">{{ t2tots.used|floatformat:0 }}</td>
+<td align="right">{{ t2tots.unused|floatformat:0 }}</td>
+<td><img src="http://chart.apis.google.com/chart?cht=bhs&chd=t:{{ t2tots.used|floatformat:0 }}|{{ t2tots.unused|floatformat:0 }}&chs=96x16&chco={{ red }},{{ green }}&chxt=x,y&chxs=0,990000,0,0,_|1,999900,0,0,_&chds=0,{{ t2tots.size|floatformat:0 }}"><img>
+</tr>
 </table>
 
-<script>
+<table>
+<tr>
+<td class="pass">Actual&gt;Pledge
+<td class="fail">Actual&lt;Pledge
+</tr>
+</table>
 
-var sitedata = [
-    {
-      "name": "RAL-LCG2", 
-      "total": 8367.3614798807102, 
-      "unused": 1202.0813730147599, 
-      "used": 7165.2801068659501, 
-      "wlcg2012": 3375.0
-    }, 
-    {
-      "name": "UKI-LT2-Brunel", 
-      "total": 12.992276070400001, 
-      "unused": 10.263387613525, 
-      "used": 2.728888456875, 
-      "wlcg2012": 0.0
-    }
-  ];
-
-
-d3.json('http://lapz.lancs.ac.uk:8123/sites.json', function(data) {
-
-  var columns = ['name', 'wlcg2012', 'total', 'used', 'unused', ''];
-  var tbody = d3.select('table#sites').append('tbody');
-  var rows = tbody.selectAll("tr")
-          .data(data)
-          .enter()
-          .append("tr");
-  
-  var cells = rows.selectAll("td")
-          .data(function(row) {
-              return columns.map(function(column) {
-                  return {column: column, value: row[column]};
-              });
-          })
-          .enter()
-          .append("td")
-              .attr('class', function(d) { return d.column })
-              .text(function(d) { return d.value; })
-  
-  var flag = d3.selectAll('td.wlcg2012')
-          .style('background', function(d) {
-            return d.delivered 
-          })
-});
-
+<h3>Tier-2 token view
+(Tier-1 
+{% for s in t1sites %}
+  <a href="{% url ukdata.views.site s.id %}">here</a> 
+{% endfor %}
+)
 {% comment %}
-var chart = d3.select("body").append("svg")
-      .attr("class", "chart")
-      .attr("width", 420)
-      .attr("height", 20 * data.length);
-
-var x = d3.scale.linear()
-      .domain([0, d3.max(data)])
-      .range([0, 420]);
-
-var y = d3.scale.ordinal()
-      .domain(data)
-      .rangeBands([0, 120]);
-
-chart.selectAll("rect")
-      .data(data)
-    .enter().append("rect")
-      .attr("y", function(d, i) { return i * 20; })
-      .attr("width", x)
-      .attr("height", 20);
-
-chart.selectAll("text")
-      .data(data)
-    .enter().append("text")
-      .attr("x", x)
-      .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-      .attr("dx", -3) // padding-right
-      .attr("dy", ".35em") // vertical-align: middle
-      .attr("text-anchor", "end") // text-align: right
-      .text(String);
-
 {% endcomment %}
-</script>
+</h3>
+<ol>
+{% for t in srmtoks %}
+  <li><a href="{% url ukdata.views.token t %}">{{ t }}</a>
+{% endfor %}
+</ol>
+
+<h3>Legend</h3>
+<ul>
+<li><dfn>Site: GOCDB site name</dfn>
+{% comment %}
+<li><dfn>GridPP (TB): pledged space per site for 2009, taken from GridPP3_T2_Allocations_2.1.xls</dfn> 
+<li><dfn>GridPP (TB): pledged space per site for 2010, taken from <a href="https://www.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP3_T2_Allocations_2009.8.xls</a></dfn>
+<li><dfn>GridPP (TB): pledged space per site for 2015, taken from <a href="https://www.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP4-Tier-2 Pledge levels-Jan2015.xlsx</a> 2015, column I15-33</dfn>
+{% endcomment %}
+<li><dfn>GridPP (TB): pledged space per site for 2016, taken from <a href="https://archive.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP4+-Tier-2 Pledge levels-Aug2015.xlsx</a> 2016, column I15-33</dfn>
+{% comment %}
+<li><dfn>RAL and Fed-T2 2009 pledge (TB): Pledge from WLCGResources-2008-2013-20APR2009.pdf 
+<li><dfn>RAL and Fed-T2 2010 pledge (TB): Pledge from WLCGResources-2009-2010_29OCT09_draftplanning.pdf
+<li><dfn>RAL and Fed-T2 2011 pledge (TB): Pledge from <a href=http://lcg.web.cern.ch/LCG/Resources/WLCGResources-2010-2012_25NOV2010.pdf>WLCGResources-2010-2012_25NOV2010.pdf</a>
+{% endcomment %}
+<li><dfn>RAL and Fed-T2 2015 pledge (TB) : Pledge from <a href=http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/>http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/</a>
+<li><dfn>Actual (TB): total space within site, unit TB</dfn>
+{% comment %}
+<li><dfn>+20%: total space expected including 20% LOCALGROUPDISK for UK usage</dfn>
+{% endcomment %}
+<li><dfn>Not-free (TB): space not free within site, unit TB</dfn>
+<li><dfn>Free (TB): unused space within site, unit TB</dfn>
+</ul>
+
+<h3>Notes</h3>
+<ul>
+<li> Tokens are retrieved from the latest <a href="http://atlas.web.cern.ch/Atlas/GROUPS/DATABASE/project/ddm/releases/TiersOfATLASCache.py">Tiers of ATLAS</a>
+<li> Stale token not updated in last 10 days are excluded
+<li> <a href="{% url ukdata.views.raw %}">Raw token data</a>
+<li> Total and Free size are queried directly from the token's SRM every 8 hours
+<li> SRM response is in bytes and converted to SI definition of TB using factor 1e-12
+<li> Sizes are rounded to 1TB
+<li> These are UK-only numbers, see <a href="http://bourricot.cern.ch/dq2/">DQ2 central accounting</a> for all clouds
+</ul>
 
 {% endblock %}

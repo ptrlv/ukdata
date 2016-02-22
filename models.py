@@ -52,6 +52,11 @@ class Site(models.Model):
     wlcg2013 = models.FloatField()
     wlcg2014 = models.FloatField()
     wlcg2015 = models.FloatField()
+    wlcg2016 = models.FloatField()
+    wlcg2017 = models.FloatField()
+    wlcg2018 = models.FloatField()
+    wlcg2019 = models.FloatField()
+    wlcg2020 = models.FloatField()
     last_modified = models.DateTimeField(auto_now=True, editable=False)
     def __unicode__(self):
         return self.name

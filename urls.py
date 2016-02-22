@@ -7,8 +7,8 @@ admin.autodiscover()
 urlpatterns = patterns('ukdata.views',
 # rendered views
 #    url(r'^$', 'maint'),
-    url(r'^$', 'front'),
-    url(r'^test/$', 'index'),
+    url(r'^$', 'index'),
+#    url(r'^test/$', 'index'),
 #    url(r'^step09/$', 'step09'),
     url(r'^cpu/$', 'cpu'),
     url(r'^raw/$', 'raw'),
