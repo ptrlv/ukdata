@@ -62,6 +62,16 @@ atlaspledge2016 = {
         'southgrid' : 1530,
         }
 
+# https://www.gridpp.ac.uk/tier-2-gridpp-pledge-levels/
+atlaspledge2018 = {
+        'londont2' : 2993,
+        'northgrid' : 3948,
+        'scotgrid' : 2982,
+        'southgrid' : 1027,
+        }
+
+latestpledge = atlaspledge2018
+
 #    atlaspledge2011 = {
 #            'londont2' : 898,
 #            'northgrid' : 1168,
@@ -127,11 +137,11 @@ def index(request):
     for site in t1sites:
         t1row = {}
         t1row['s'] = site
-        if site.total > site.wlcg2016:
+        if site.total > site.wlcg2018:
             t1row['p'] = 'pass'
         else:
             t1row['p'] = 'fail'
-        if site.total > site.wlcg2016:
+        if site.total > site.wlcg2018:
             t1pledge.append('pass')
         else:
             t1pledge.append('fail')
@@ -152,8 +162,8 @@ def index(request):
     for site in t2sites:
         t2row = {}
         t2row['s'] = site
-        t2row['wpledge'] = 1.00 * site.wlcg2016
-        t2row['localtax'] = site.wlcg2016 + 0.20 * site.wlcg2016
+        t2row['wpledge'] = 1.00 * site.wlcg2018
+        t2row['localtax'] = site.wlcg2018 + 0.20 * site.wlcg2018
         dtdead = datetime.now() - timedelta(days=10)
         try:
             localtoks = Token.objects.filter(srm__site=site, name='ATLASLOCALGROUPDISK', last_modified__gt=dtdead)
@@ -167,7 +177,7 @@ def index(request):
             t2row['w'] = 'pass'
         else:
             t2row['w'] = 'fail'
-        if site.total > site.wlcg2016:
+        if site.total > site.wlcg2018:
             t2row['p'] = 'pass'
         else:
             t2row['p'] = 'fail'
@@ -178,7 +188,7 @@ def index(request):
 
         t2row['url'] = usageurl % (site.used, site.unused, site.total)
 
-        t2tots['pledge'] += site.wlcg2016
+        t2tots['pledge'] += site.wlcg2018
         t2tots['wpledge'] += t2row['wpledge']
         t2tots['wsize'] += t2row['wsize']
         t2tots['size'] += site.total
@@ -192,10 +202,10 @@ def index(request):
     fedtots = {}
     fedtots['total'] = 0
     fedtots['p'] = 0
-    for fed in atlaspledge2016.keys():
+    for fed in latestpledge.keys():
         fedrow = {}
         fedrow['name'] = fed
-        fedrow['pledge'] = atlaspledge2016[fed]
+        fedrow['pledge'] = latestpledge[fed]
         fedrow['total'] = 0
         fedsites = sites.filter(tags__name=fed)
         dtdead = datetime.now() - timedelta(days=10)
@@ -208,12 +218,12 @@ def index(request):
             for localtok in localtoks:
                 nonlocal -=  localtok.total
             fedrow['total'] += nonlocal
-        if fedrow['total'] > atlaspledge2016[fed]:
+        if fedrow['total'] > latestpledge[fed]:
             fedrow['p'] = 'pass'
         else:
             fedrow['p'] = 'fail'
         fedtots['total'] += fedrow['total']
-        fedtots['p'] += atlaspledge2016[fed]
+        fedtots['p'] += latestpledge[fed]
 
         fedrows.append(fedrow)
 
@@ -256,9 +266,9 @@ def rawbysite(request):
     Return data of site usage in json format
     """
 
-    data = Site.objects.values('name', 'total', 'used', 'unused', 'wlcg2016')
+    data = Site.objects.values('name', 'total', 'used', 'unused', 'wlcg2018')
     for d in data:
-        if d['total'] > d['wlcg2016']:
+        if d['total'] > d['wlcg2018']:
             d['delivered'] = True
         else:
             d['delivered'] = False
@@ -474,7 +484,7 @@ def token(request, t):
             percentused = 0
 
         try:
-          tokenfrac = 100 * token.total / token.srm.site.wlcg2016
+          tokenfrac = 100 * token.total / token.srm.site.wlcg2018
         except ZeroDivisionError, e:
           tokenfrac = 0
 

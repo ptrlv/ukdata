@@ -11,7 +11,7 @@
 <table border=1>
   <tr>
     <th>Site (click for detail)</th>
-    <th>WLCG Pledge 2016 (TB)</th>
+    <th>WLCG Pledge 2018 (TB)</th>
     <th>Actual (TB)</th>
     <th>Not-free(TB)</th>
     <th>Free (TB)</th>
@@ -20,7 +20,7 @@
 {% for t1row in t1rows %}
   <tr>
     <td><a href="{% url ukdata.views.site t1row.s.id %}">{{ t1row.s.name }}</a></td>
-    <td class="{{ p }}" align="right">{{ t1row.s.wlcg2016|floatformat:0 }}</td>
+    <td class="{{ p }}" align="right">{{ t1row.s.wlcg2018|floatformat:0 }}</td>
     {% for p in t1pledge %}
       {% ifequal forloop.counter forloop.parentloop.counter %}
         <td class={{ p }} align="right">{{ t1row.s.total|floatformat:0 }}</td>
@@ -34,7 +34,7 @@
 </table>
 (NOTE: includes space in RAL-FARM)
 
-<h3>Federated Tier-2 totals (2016 pledge)</h3>
+<h3>Federated Tier-2 totals (2018 pledge)</h3>
 
 <table border=1>
 <tr>
@@ -63,7 +63,7 @@
 </table>
 (Excludes LOCALGROUPDISK)
 
-<h3>Tier-2 site view (2016 pledge)</h3>
+<h3>Tier-2 site view (2018 pledge)</h3>
 <table border=1>
   <tr>
     <th>Site (click for detail)</th>
@@ -79,7 +79,7 @@
 {% for t2row in t2rows %}
   <tr>
     <td><a href="{% url ukdata.views.site t2row.s.id %}">{{ t2row.s.name }}</a></td>
-    <td align="right">{{ t2row.s.wlcg2016|floatformat:0 }}</td>
+    <td align="right">{{ t2row.s.wlcg2018|floatformat:0 }}</td>
     <td class="{{ t2row.p }}" align="right">{{ t2row.s.total|floatformat:0 }}</td>
 {% comment %}
     <td class="{{ t2row.tax }}" align="right">{{ t2row.localtax|floatformat:0 }}</td>
@@ -131,14 +131,16 @@ _GREEN = '99CC99'
 <li><dfn>GridPP (TB): pledged space per site for 2009, taken from GridPP3_T2_Allocations_2.1.xls</dfn> 
 <li><dfn>GridPP (TB): pledged space per site for 2010, taken from <a href="https://www.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP3_T2_Allocations_2009.8.xls</a></dfn>
 <li><dfn>GridPP (TB): pledged space per site for 2015, taken from <a href="https://www.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP4-Tier-2 Pledge levels-Jan2015.xlsx</a> 2015, column I15-33</dfn>
-{% endcomment %}
 <li><dfn>GridPP (TB): pledged space per site for 2016, taken from <a href="https://archive.gridpp.ac.uk/deployment/status/reports/reports.html">GridPP4+-Tier-2 Pledge levels-Aug2015.xlsx</a> 2016, column I15-33</dfn>
+{% endcomment %}
+<li><dfn>GridPP (TB): pledged space per site for 2018, taken from <a href="https://www.gridpp.ac.uk/tier-2-gridpp-pledge-levels/">GridPP5-Tier-2 2018 Pledge levels-at Sep2017</a> column I15-32</dfn>
 {% comment %}
 <li><dfn>RAL and Fed-T2 2009 pledge (TB): Pledge from WLCGResources-2008-2013-20APR2009.pdf 
 <li><dfn>RAL and Fed-T2 2010 pledge (TB): Pledge from WLCGResources-2009-2010_29OCT09_draftplanning.pdf
 <li><dfn>RAL and Fed-T2 2011 pledge (TB): Pledge from <a href=http://lcg.web.cern.ch/LCG/Resources/WLCGResources-2010-2012_25NOV2010.pdf>WLCGResources-2010-2012_25NOV2010.pdf</a>
-{% endcomment %}
 <li><dfn>RAL and Fed-T2 2015 pledge (TB) : Pledge from <a href=http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/>http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/</a>
+{% endcomment %}
+<li><dfn>RAL 2018 pledge (TB) : Pledge from <a href=http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/>http://gstat-wlcg.cern.ch/apps/capacities/pledge_comparison/</a>
 <li><dfn>Actual (TB): total space within site, unit TB</dfn>
 {% comment %}
 <li><dfn>+20%: total space expected including 20% LOCALGROUPDISK for UK usage</dfn>
